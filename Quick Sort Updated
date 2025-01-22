@@ -1,0 +1,81 @@
+import java.util.Arrays;
+
+public class QuickSort {
+
+    private static final int INSERTION_SORT_THRESHOLD = 10;
+
+    public static void quickSort(int[] array) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        quickSort(array, 0, array.length - 1);
+    }
+
+    private static void quickSort(int[] array, int low, int high) {
+        while (low < high) {
+            if (high - low < INSERTION_SORT_THRESHOLD) {
+                insertionSort(array, low, high);
+                return;
+            } 
+            int pivotIndex = partition(array, low, high);
+            if (pivotIndex - low < high - pivotIndex) {
+                quickSort(array, low, pivotIndex - 1);
+                low = pivotIndex + 1;
+            } else {
+                quickSort(array, pivotIndex + 1, high);
+                high = pivotIndex - 1;
+            }
+        }
+    }
+
+    private static int partition(int[] array, int low, int high) {
+        int pivotIndex = medianOfThree(array, low, high);
+        int pivot = array[pivotIndex];
+        swap(array, pivotIndex, high); // Przenosimy pivot na koniec
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (array[j] <= pivot) {
+                i++;
+                swap(array, i, j);
+            }
+        }
+
+        swap(array, i + 1, high);
+        return i + 1;
+    }
+
+    private static int medianOfThree(int[] array, int low, int high) {
+        int mid = low + (high - low) / 2;
+        if (array[low] > array[mid]) swap(array, low, mid);
+        if (array[low] > array[high]) swap(array, low, high);
+        if (array[mid] > array[high]) swap(array, mid, high);
+        return mid;
+    }
+
+    private static void insertionSort(int[] array, int low, int high) {
+        for (int i = low + 1; i <= high; i++) {
+            int key = array[i];
+            int j = i - 1;
+            while (j >= low && array[j] > key) {
+                array[j + 1] = array[j];
+                j--;
+            }
+            array[j + 1] = key;
+        }
+    }
+
+    private static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    public static void main(String[] args) {
+        int[] array = {12, 4, 7, 9, 5, 2, 1, 6, 3, 8};
+        
+        System.out.println("Przed sortowaniem: " + Arrays.toString(array));
+        quickSort(array);
+        System.out.println("Po sortowaniu: " + Arrays.toString(array));
+    }
+}
